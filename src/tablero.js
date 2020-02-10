@@ -123,7 +123,7 @@ class Tablero extends React.Component {
         return (
             <div>
                 <Enemigos enemigos={this.props.G.enemigos} />
-                <Jugador jugador={this.props.G.players[this.props.ctx.currentPlayer]} />
+                {/* <Jugador jugador={this.props.G.player} /> */}
             </div>
         );
     }

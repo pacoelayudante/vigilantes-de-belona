@@ -85,23 +85,23 @@ const moverCartas = (G, ctx) => {
 
 }
 
-const genPlayers = (ctx) => {
-    let players = {};
-    for (let i = 0; i < ctx.numPlayers; i++) {
-        players[i + ''] = {
-            vida: 3,
-            dataCartas: MazoHeroeBasico,
-            mazo: ctx.random.Shuffle( (new Array(MazoHeroeBasico.length)).map((el,index)=>index) ),
-            mano: [],
-            esquivar: [],
-            atacar: [],
-            peligro: [],
-            golpe: [],
-            accionesTomadas: [],
-        };
-    }
-    return players;
-}
+// const genPlayers = (ctx) => {
+//     let players = {};
+//     for (let i = 0; i < ctx.numPlayers; i++) {
+//         players[i + ''] = {
+//             vida: 3,
+//             dataCartas: MazoHeroeBasico,
+//             mazo: ctx.random.Shuffle( (new Array(MazoHeroeBasico.length)).map((el,index)=>index) ),
+//             mano: [],
+//             esquivar: [],
+//             atacar: [],
+//             peligro: [],
+//             golpe: [],
+//             accionesTomadas: [],
+//         };
+//     }
+//     return players;
+// }
 
 //Juego
 export default {
@@ -111,27 +111,34 @@ export default {
 
     setup: (ctx, setupData) => ({
         enemigos: [Enemigos.Goblin, Enemigos.Goblin, Enemigos.Orco].map(enemigoStats => new Enemigo(ctx, enemigoStats)),
-        players: genPlayers(ctx),
+        // players: genPlayers(ctx),
     }),
 
+    playerSetup: (playerID) => ({
+            nombre: playerID,
+            vida: 3,
+            mazo: MazoHeroeBasico.slice(),
+            mano: [],
+            esquivar: [],
+            atacar: [],
+            peligro: [],
+            golpe: [],
+            accionesTomadas: [],
+        }),
+    plugins: [PluginPlayer],
+    
+    // UNCOMMENT THIS TO CHECKOUT OBJECT CREATION IS TRIGGERED (It does)
+    // playerSetup: (playerId)=>{
+    //     let dummy = {
+    //         someData:111,
+    //     }
+    //     console.log(dummy);
+    //     return dummy;
+    // },
 
-    // playerSetup: (playerID) => {
-    //     const a = {
-    //         nombre: playerID,
-    //         vida: 3,
-    //         mazo: MazoHeroeBasico.slice(),
-    //         mano: [],
-    //         esquivar: [],
-    //         atacar: [],
-    //         peligro: [],
-    //         golpe: [],
-    //         accionesTomadas: [],
-    //     };
-    //     console.log(a); return a;},
-    // plugins: [PluginPlayer],
-
-    turn: { moveLimit: 1, order: TurnOrder.RESET },
-    // flow: {
+    turn: {
+         moveLimit: 1, order: TurnOrder.RESET },
+    
     phases: {
         // iniciarCombate: {
         //     moves: { combatir:(G,ctx)=>ctx.events.endPhase() },
@@ -180,5 +187,5 @@ export default {
             next: 'robar'
         }
     }
-    // }
+    
 };
