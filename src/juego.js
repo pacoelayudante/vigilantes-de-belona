@@ -38,23 +38,39 @@ class Enemigo {
 
 }
 
-const robarCartasInicial = (G, ctx) => {
-    
+const robarCartasInicial = (G, ctx, jug) => {
+    const cantCartas = Math.min(G.players[jug].vida, G.players[jug].mazo.length);
+    robarXCartas(G, ctx, cantCartas, jug);
+    ctx.events.endPhase();
 }
-const esquivar = (G, ctx) => {
-
+const robarCarta = (G, ctx, jug) => {
+    if(G.players[jug].accionesTomadas.includes("robarCarta")) return;
+    G.players[jug].accionesTomadas.push("robarCarta");
+    robarXCartas(G,ctx,1,jug);
+    ctx.events.endPhase();
 }
-const atacar = (G, ctx) => {
+const esquivar = (G, ctx, jug) => {
+    if(G.players[jug].accionesTomadas.includes("esquivar")) return;
+    G.players[jug].accionesTomadas.push("esquivar");
 
+    ctx.events.endPhase();
 }
-const buscarReparo = (G, ctx) => {
+const atacar = (G, ctx, jug) => {
+    if(G.players[jug].accionesTomadas.includes("atacar")) return;
+    G.players[jug].accionesTomadas.push("atacar");
 
+    ctx.events.endPhase();
 }
-const descansar = (G, ctx) => {
+const buscarReparo = (G, ctx, jug) => {
+    if(G.players[jug].accionesTomadas.includes("buscarReparo")) return;
+    G.players[jug].accionesTomadas.push("buscarReparo");
 
+    ctx.events.endPhase();
 }
-const robarCarta = (G, ctx) => {
-
+const descansar = (G, ctx, jug) => {
+    if(G.players[jug].accionesTomadas.includes("descansar")) return;
+    G.players[jug].accionesTomadas.push("descansar");
+    ctx.events.endPhase();
 }
 const enemigosPreparan = (G, ctx) => {
     for (let i = 0; i < G.enemigos.length; i++) {
@@ -64,7 +80,7 @@ const enemigosPreparan = (G, ctx) => {
             G.enemigos[i].mazoJugado = [];
         }
         if (G.enemigos[i].cartaPorJugar != null) G.enemigos[i].mazoJugado.push(G.enemigos[i].cartaPorJugar);
-        G.enemigos[i].cartaPorJugar = G.enemigos[i].mazoPorJugar.shift(); console.log(G.enemigos[i].mazoPorJugar);
+        G.enemigos[i].cartaPorJugar = G.enemigos[i].mazoPorJugar.shift();
     }
 }
 const enemigoAtaca = (G, ctx) => {
@@ -82,16 +98,24 @@ const enemigoReset = (G, ctx) => {
     }
 }
 const moverCartas = (G, ctx) => {
-
+    Object.keys(G.players).forEach((jug)=>G.players[jug].accionesTomadas=[]);
+    enemigoReset(G,ctx);
 }
 
+const robarXCartas = (G, ctx, cantCartas,jug) => {
+    for (let i = 0; i < cantCartas; i++) {
+        if (G.players[jug].mazo.length > 0)
+        G.players[jug].mano.unshift(G.players[jug].mazo.pop());
+        }
+}
 const genPlayers = (ctx) => {
     let players = {};
     for (let i = 0; i < ctx.numPlayers; i++) {
         players[i + ''] = {
+            id: i + '',
             vida: 3,
             dataCartas: MazoHeroeBasico,
-            mazo: ctx.random.Shuffle( (new Array(MazoHeroeBasico.length)).map((el,index)=>index) ),
+            mazo: ctx.random.Shuffle((new Array(MazoHeroeBasico.length)).fill(1).map((el, index) => index)),
             mano: [],
             esquivar: [],
             atacar: [],
@@ -112,6 +136,7 @@ export default {
     setup: (ctx, setupData) => ({
         enemigos: [Enemigos.Goblin, Enemigos.Goblin, Enemigos.Orco].map(enemigoStats => new Enemigo(ctx, enemigoStats)),
         players: genPlayers(ctx),
+        primerRonda: true,
     }),
 
 
@@ -130,37 +155,38 @@ export default {
     //     console.log(a); return a;},
     // plugins: [PluginPlayer],
 
-    turn: { moveLimit: 1, order: TurnOrder.RESET },
-    // flow: {
+    turn: { order: TurnOrder.RESET },
+    
     phases: {
-        // iniciarCombate: {
-        //     moves: { combatir:(G,ctx)=>ctx.events.endPhase() },
-        //     next: 'robar',
-        //     start: true,
-        // },
         robar: {
-            // onBegin:(G,ctx)=>{
-            //     robarCartasInicial();
-            //     ctx.events.endPhase();
-            // },
+            onBegin: (G, ctx) => {
+                if (G.primerRonda) {
+                    Object.keys( G.players).forEach((elem) => robarXCartas(G, ctx,3, elem));
+                    G.primerRonda = false;
+                }
+            },
             moves: { robarCartasInicial },
-            next: 'enemigoPrepara',
+            next: 'primerAccion',
             start: true,
         },
         enemigoPrepara: {
             onBegin: (G, ctx) => {
-                enemigoReset(G, ctx);
                 enemigosPreparan(G, ctx);
-                ctx.events.endPhase();
+                // ctx.events.endPhase();
             },
+            // endIf:(G,ctx)=>true,
             moves: {},
             // next: 'primerAccion',
-            next: 'ataqueEnemigo',
+            next: 'primerAccion',
             // start: true,
         },
         primerAccion: {
+            onBegin: (G, ctx) => {
+                enemigoReset(G, ctx);
+                enemigosPreparan(G, ctx);
+            },
             moves: { esquivar, atacar, buscarReparo, descansar, robarCarta },
-            next: 'ataqueEnemigo'
+            next: 'segundaAccion'
         },
         ataqueEnemigo: {
             onBegin: (G, ctx) => {
@@ -172,13 +198,19 @@ export default {
             next: 'enemigoPrepara',
         },
         segundaAccion: {
+            onBegin: (G, ctx) => {
+                enemigoAtaca(G, ctx);
+            },
             moves: { esquivar, atacar, buscarReparo, descansar, robarCarta },
-            next: 'moverCartas'
+            next: 'robar',
+            onEnd:(G,ctx)=>{
+                moverCartas(G,ctx);
+            },
         },
         moverCartas: {
             moves: { moverCartas },
             next: 'robar'
         }
     }
-    // }
+    
 };

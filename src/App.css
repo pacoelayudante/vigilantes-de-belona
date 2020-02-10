@@ -113,7 +113,7 @@ body {
   --ancho-carta: 50px;
   font-size: 1rem;
 }
-.mazo .carta-cara {
+.carta-cara {
   border: solid 1px;
   box-sizing: border-box;
 }
@@ -198,6 +198,13 @@ body {
   margin-bottom: calc(-2px + 0.2em);
   box-shadow: var(--oscuro) 0 0px;
 }
+.boton.inactivo,.boton.usado {
+  pointer-events: none;
+  background-color: var(--verde-oscuro);
+}
+.boton.usado{
+  background-color: var(--bordo);
+}
 
 .jugador-vidas {    
   display: flex;
@@ -222,14 +229,17 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
-.jugador-vidas .vida .dano {
+.jugador-vidas>div.dano {
   background-image: url('./noun_hearthbreak_2563703.png');
 }
 .jugador-vidas>div.sano {
   background-image: url('./noun_hearth_2563703.png');
 }
 .jugador-vidas>div:last-child.sano {
-  background-image: url('./noun_sword_2397996.png');
+  background-image: url('./noun_skulllive_2817608.png');
+}
+.jugador-vidas>div:last-child.dano {
+  background-image: url('./noun_skulldead_2817608.png');
 }
 
 .jugador {
@@ -248,6 +258,12 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
+
+  transition: all 1s;
+}
+.jugador-carta.en-mano {
+  /* height:100%; */
+  top:-50%;
 }
 .jugador-carta .carta {
   /* width: 50px; */

@@ -76,7 +76,12 @@ class Enemigos extends React.Component {
 
 class Accion extends React.Component {
     render() {
-        return (<div><div className="boton accion">{this.props.children}</div></div>);
+        if (this.props.accion) {
+            return (<div><div onClick={() => this.props.accion(this.props.accion.name, this.props.jugador.id)} className={"boton accion " + (this.props.inactivo ? "inactivo" : "")}>{this.props.children}</div></div>);
+        }
+        else {
+            return (<div><div className={"boton accion usado"}>{this.props.children}</div></div>);
+        }
     }
 }
 class VidaJugador extends React.Component {
@@ -86,32 +91,40 @@ class VidaJugador extends React.Component {
         );
 
         return (<div>
-            <div className="boton">+{this.props.jugador.vida} ROBAR</div>
+            <div onClick={() => this.props.robar3(this.props.jugador.id)} className={"boton " + (this.props.inactivo ? "inactivo" : "")}>+{this.props.jugador.vida} ROBAR</div>
             <div className="jugador-vidas">{vidas}</div>
         </div>);
     }
 }
 class Jugador extends React.Component {
     render() {
-        const cartasEnMazo = this.props.jugador.mazo.map((elem, index) =>
-            <div key={index} className="jugador-carta en-mazo">
-                <Carta className="volteada">¿?</Carta>
-            </div>
-        );
-        // const cartasEnMano
+        const cantEnMano = this.props.jugador.mano.length;
+        const cartas = this.props.jugador.dataCartas.map((elem, index) => {
+            if (this.props.jugador.mazo.includes(index)) {
+                return (<div key={index} className="jugador-carta en-mazo"><Carta className="volteada">¿?</Carta></div>);
+            }
+            else if (this.props.jugador.mano.includes(index)) {
+                const pos = this.props.jugador.mano.indexOf(index);
+                return (<div key={index} className="jugador-carta en-mano"
+                    style={{ "--cant-cols": cantEnMano, "--col": pos }} ><Carta>{elem}</Carta></div>);
+            }
+            return (<div></div>);
+        });
+
+        const accionesBasicasInactivas = this.props.fase !== "primerAccion" && this.props.fase !== "segundaAccion";
 
         return (
             <div className="jugador">
                 <div className="grilla-manual">
-                    {[...cartasEnMazo]}
+                    {cartas}
                 </div>
                 <div className="grilla">
-                    <VidaJugador jugador={this.props.jugador} />
-                    <Accion>Esquivar</Accion>
-                    <Accion>Recuperar</Accion>
-                    <Accion>Robar 1</Accion>
-                    <Accion>Atacar</Accion>
-                    <Accion>Descansar</Accion>
+                    <VidaJugador inactivo={this.props.fase !== "robar"} robar3={this.props.moves.robarCartasInicial} jugador={this.props.jugador} />
+                    <Accion accion={this.props.jugador.accionesTomadas.includes("esquivar") ? null : this.props.moves.esquivar} inactivo={accionesBasicasInactivas} jugador={this.props.jugador}>Esquivar</Accion>
+                    <Accion accion={this.props.jugador.accionesTomadas.includes("buscarReparo") ? null : this.props.moves.buscarReparo} inactivo={accionesBasicasInactivas} jugador={this.props.jugador}>Recuperar</Accion>
+                    <Accion accion={this.props.jugador.accionesTomadas.includes("robarCarta") ? null : this.props.moves.robarCarta} inactivo={accionesBasicasInactivas} jugador={this.props.jugador}>Robar 1</Accion>
+                    <Accion accion={this.props.jugador.accionesTomadas.includes("atacar") ? null : this.props.moves.atacar} inactivo={accionesBasicasInactivas} jugador={this.props.jugador}>Atacar</Accion>
+                    <Accion accion={this.props.jugador.accionesTomadas.includes("descansar") ? null : this.props.moves.descansar} inactivo={accionesBasicasInactivas} jugador={this.props.jugador}>Descansar</Accion>
                 </div>
             </div>
         );
@@ -123,7 +136,7 @@ class Tablero extends React.Component {
         return (
             <div>
                 <Enemigos enemigos={this.props.G.enemigos} />
-                <Jugador jugador={this.props.G.players[this.props.ctx.currentPlayer]} />
+                <Jugador fase={this.props.ctx.phase} moves={this.props.moves} jugador={this.props.G.players[this.props.ctx.currentPlayer]} />
             </div>
         );
     }
