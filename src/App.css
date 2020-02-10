@@ -1,38 +1,273 @@
-.App {
+body {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  --verde-claro: #abdd70;
+  --verde-oscuro: #488d12;
+  --bordo: #ce0235;
+  --claro: #f6d7d7;
+  --oscuro: #2b1414;
+  background-color: var(--oscuro);
+  color: var(--oscuro);
+  user-select: none;
+}
+
+.enemigos {
+  display: flex;
+}
+
+.enemigo {
+  --altura-nombre: 1.5rem;
+  display: flex;
+  width: 200px;
+  height: 150px;
+  font-weight: bolder;
+  flex-wrap: wrap;
+  align-content: baseline;
   text-align: center;
+  background-color: var(--verde-claro);
+  margin: 2px;
+  padding: 8px;
+  border-radius: 8px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* .enemigo>* {
+  box-sizing: border-box;
+  border: dashed 1px rgba(0, 0, 0, 0.25);
+} */
+
+.enemigo>* {
+  height: calc(100% - var(--altura-nombre));
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.enemigo .nombre {
+  flex-basis: 100%;
+  height: var(--altura-nombre);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.enemigo>.defensa {
+  flex-basis: 30%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  font-size: 3rem;
+  color: var(--claro);
+}
+
+.enemigo .defensa>* {
+  flex-basis: 100%;
+  background-image: url('./noun_badge_1266359.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-direction: column;
 }
 
-.App-link {
-  color: #61dafb;
+.enemigo .defensa .base {
+  transform: scale(0.5);
+}
+.enemigo .defensa .actual {
+  transform: scale(1.0);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.enemigo .mazo {
+  flex-basis: 50%;
+  position: relative;
+}
+.enemigo .mazo .carta {
+  color: var(--claro);
+  font-weight: bolder;
+  text-align: center;
+  font-size: 1rem;
+
+  position: absolute;
+  top: -25%;
+  left: -25%;
+  transform: scale(0.5);
+  width: 100%;
+  height: 100%;
+  
+  transition: all 0.5s;
+}
+.enemigo .mazo .carta-actual {
+  top: 50%;
+  left: 0%;
+  transform: scale(1.0);
+}
+.enemigo .mazo .ya-jugada {
+  left: 25%;
+}
+
+.enemigo .carta-enemigo>div {
+  background-repeat: no-repeat;
+  background-size: auto 60%;
+  background-position: 75% 50%;
+  font-size: 250%;
+}
+.enemigo .carta-enemigo .defensa {
+  background-image: url('./noun_badge_1266359.png');
+}
+.enemigo .carta-enemigo .ataque {
+  background-image: url('./noun_sword_2397996.png');
+}
+.enemigo .carta {
+  --ancho-carta: 50px;
+  font-size: 1rem;
+}
+.mazo .carta-cara {
+  border: solid 1px;
+  box-sizing: border-box;
+}
+.carta-cara:not(.carta-reverso) {
+  background-color: var(--oscuro);
+}
+.carta-enemigo {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-size: 100%;
+  justify-content: space-evenly;
+}
+.goblin .carta-reverso {
+  background-image: url('./goblin.jpg');
+}
+.orco .carta-reverso {
+  background-image: url('./orco.jpg');
+}
+
+.enemigo .hp {
+  flex-basis: 20%;
+  display: flex;
+  flex-direction: column;
+}
+
+.enemigo .hp>* {
+  height: 100%;
+  max-height: 30%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.enemigo .hp .dano {
+  background-image: url('./noun_hearthbreak_2563703.png');
+}
+.enemigo .hp .sano {
+  background-image: url('./noun_hearth_2563703.png');
+}
+
+.jugador {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 30%;
+  background-color: var(--verde-claro);
+}
+
+.jugador .grilla {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+}
+.jugador .grilla>div {
+  flex-basis: 33%;
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+.boton {
+  pointer-events: all;
+  font-weight: bolder;
+  background-color: var(--claro);
+  padding: 0.3em;
+  border-radius: 0.5em;
+  margin: 0.2em;
+  box-shadow: var(--oscuro) 0 2px;
+  /* position: absolute;
+  bottom: 0px; */
+}
+.boton:hover {
+  background-color: var(--verde-claro);
+}
+.boton:active:hover {
+  margin-top: calc(+2px + 0.2em);
+  margin-bottom: calc(-2px + 0.2em);
+  box-shadow: var(--oscuro) 0 0px;
+}
+
+.jugador-vidas {    
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  align-self: stretch;
+  justify-content: center;
+}
+.jugador-vidas>div {
+  flex-basis: 20%;
+  display: flex;
+  flex-direction: column;
+  
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.jugador-vidas .vida>* {
+  height: 100%;
+  max-height: 30%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.jugador-vidas .vida .dano {
+  background-image: url('./noun_hearthbreak_2563703.png');
+}
+.jugador-vidas>div.sano {
+  background-image: url('./noun_hearth_2563703.png');
+}
+.jugador-vidas>div:last-child.sano {
+  background-image: url('./noun_sword_2397996.png');
+}
+
+.jugador {
+  --cant-cols: 3;
+  --cant-filas: 2;
+  --col: 0;
+  --fila: 0;
+}
+.jugador-carta {
+  position: absolute;
+  width: calc(100% / var(--cant-cols) );
+  height: calc(100% / var(--cant-filas) );
+  left: calc( var(--col) * 100% / var(--cant-cols) );
+  top: calc( var(--fila) * 100% / var(--cant-filas) );
+
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+.jugador-carta .carta {
+  /* width: 50px; */
+  height: 100px;
+  --ancho-carta: 70px;
+  max-width: 100%;
+  max-height: 100%;
+  font-size: 3rem;
+  font-weight: bolder;
+  color: var(--claro);
+}
+.en-mazo {
+  --col: 0;
+  --fila: 1;
+}
+.jugador .carta-reverso {
+  background-image: url('./char1.jpg');
+}
+.jugador .carta-cara {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

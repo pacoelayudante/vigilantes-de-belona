@@ -1,0 +1,39 @@
+/*
+Tomado de Shay Howe @ https://codepen.io/shayhowe
+*/
+.carta {
+    --ancho-carta: 300px;
+    width: var(--ancho-carta);
+    height: 450px;
+    perspective: calc(var(--ancho-carta) * 4);
+    position: relative;
+}
+.carta-interna {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: all 0.25s ease-in-out;
+}
+
+.carta:hover>.carta-interna,.carta.volteada>.carta-interna {
+  transform: rotateY(180deg);
+}
+.carta.volteada:hover>.carta-interna {
+    transform: rotateY(0deg);
+  }
+
+.carta-cara {
+    width: 100%;
+    height: 100%;
+    border-radius: 15%;
+    position: absolute;
+    overflow: hidden;
+    backface-visibility: hidden;
+}
+.carta-reverso {
+    background-position: top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    transform: rotateY(180deg);
+}
