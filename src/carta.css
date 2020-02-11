@@ -16,12 +16,13 @@ Tomado de Shay Howe @ https://codepen.io/shayhowe
     transition: all 0.25s ease-in-out;
 }
 
-.carta:hover>.carta-interna,.carta.volteada>.carta-interna {
+/* .carta:hover>.carta-interna, */
+.carta.volteada>.carta-interna {
   transform: rotateY(180deg);
 }
-.carta.volteada:hover>.carta-interna {
+/* .carta.volteada:hover>.carta-interna {
     transform: rotateY(0deg);
-  }
+  } */
 
 .carta-cara {
     width: 100%;

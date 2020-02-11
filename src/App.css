@@ -10,6 +10,10 @@ body {
   user-select: none;
 }
 
+.oculto {
+  visibility: hidden;
+}
+
 .enemigos {
   display: flex;
 }
@@ -19,6 +23,8 @@ body {
   display: flex;
   width: 200px;
   height: 150px;
+  max-height: 25vh;
+  /* max-width: 25vw; */
   font-weight: bolder;
   flex-wrap: wrap;
   align-content: baseline;
@@ -47,7 +53,7 @@ body {
   flex-basis: 30%;
   display: flex;
   flex-direction: column;
-  font-size: 3rem;
+  font-size: min( 3rem, 6vh);
   color: var(--claro);
 }
 
@@ -65,6 +71,7 @@ body {
 .enemigo .defensa .base {
   transform: scale(0.5);
 }
+
 .enemigo .defensa .actual {
   transform: scale(1.0);
 }
@@ -73,26 +80,27 @@ body {
   flex-basis: 50%;
   position: relative;
 }
+
 .enemigo .mazo .carta {
   color: var(--claro);
   font-weight: bolder;
   text-align: center;
   font-size: 1rem;
-
   position: absolute;
   top: -25%;
   left: -25%;
   transform: scale(0.5);
   width: 100%;
   height: 100%;
-  
   transition: all 0.5s;
 }
+
 .enemigo .mazo .carta-actual {
   top: 50%;
   left: 0%;
   transform: scale(1.0);
 }
+
 .enemigo .mazo .ya-jugada {
   left: 25%;
 }
@@ -101,25 +109,31 @@ body {
   background-repeat: no-repeat;
   background-size: auto 60%;
   background-position: 75% 50%;
-  font-size: 250%;
+  font-size: min( 250%, 6vh);
 }
+
 .enemigo .carta-enemigo .defensa {
   background-image: url('./noun_badge_1266359.png');
 }
+
 .enemigo .carta-enemigo .ataque {
   background-image: url('./noun_sword_2397996.png');
 }
+
 .enemigo .carta {
   --ancho-carta: 50px;
   font-size: 1rem;
 }
+
 .carta-cara {
   border: solid 1px;
   box-sizing: border-box;
 }
+
 .carta-cara:not(.carta-reverso) {
   background-color: var(--oscuro);
 }
+
 .carta-enemigo {
   display: flex;
   flex-direction: column;
@@ -127,9 +141,11 @@ body {
   font-size: 100%;
   justify-content: space-evenly;
 }
+
 .goblin .carta-reverso {
   background-image: url('./goblin.jpg');
 }
+
 .orco .carta-reverso {
   background-image: url('./orco.jpg');
 }
@@ -147,9 +163,11 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .enemigo .hp .dano {
   background-image: url('./noun_hearthbreak_2563703.png');
 }
+
 .enemigo .hp .sano {
   background-image: url('./noun_hearth_2563703.png');
 }
@@ -171,6 +189,7 @@ body {
   width: 100%;
   pointer-events: none;
 }
+
 .jugador .grilla>div {
   flex-basis: 33%;
   position: relative;
@@ -190,38 +209,55 @@ body {
   /* position: absolute;
   bottom: 0px; */
 }
+
 .boton:hover {
   background-color: var(--verde-claro);
 }
+
 .boton:active:hover {
   margin-top: calc(+2px + 0.2em);
   margin-bottom: calc(-2px + 0.2em);
   box-shadow: var(--oscuro) 0 0px;
 }
-.boton.inactivo,.boton.usado {
+
+.boton.inactivo, .boton.usado {
   pointer-events: none;
   background-color: var(--verde-oscuro);
 }
-.boton.usado{
+
+.boton.usado {
   background-color: var(--bordo);
 }
 
-.jugador-vidas {    
+.boton:not(.inactivo) {
+  z-index: 10;
+}
+
+.enemigo .boton {
+  background-image: none;
+  color: var(--oscuro);
+  position: absolute;
+  font-size: min( 1rem, 3vmin);
+  height: auto;
+}
+
+.jugador-vidas {
   display: flex;
   flex-direction: row;
   flex-grow: 1;
   align-self: stretch;
   justify-content: center;
 }
+
 .jugador-vidas>div {
   flex-basis: 20%;
   display: flex;
   flex-direction: column;
-  
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .jugador-vidas .vida>* {
   height: 100%;
   max-height: 30%;
@@ -229,15 +265,19 @@ body {
   background-position: center;
   background-repeat: no-repeat;
 }
+
 .jugador-vidas>div.dano {
   background-image: url('./noun_hearthbreak_2563703.png');
 }
+
 .jugador-vidas>div.sano {
   background-image: url('./noun_hearth_2563703.png');
 }
+
 .jugador-vidas>div:last-child.sano {
   background-image: url('./noun_skulllive_2817608.png');
 }
+
 .jugador-vidas>div:last-child.dano {
   background-image: url('./noun_skulldead_2817608.png');
 }
@@ -248,42 +288,113 @@ body {
   --col: 0;
   --fila: 0;
 }
+
 .jugador-carta {
   position: absolute;
-  width: calc(100% / var(--cant-cols) );
-  height: calc(100% / var(--cant-filas) );
-  left: calc( var(--col) * 100% / var(--cant-cols) );
-  top: calc( var(--fila) * 100% / var(--cant-filas) );
-
+  width: calc(100% / var(--cant-cols));
+  height: calc(100% / var(--cant-filas));
+  left: calc( var(--col) * 100% / var(--cant-cols));
+  top: calc( var(--fila) * 100% / var(--cant-filas));
   align-items: center;
   display: flex;
   flex-direction: column;
-
-  transition: all 1s;
-}
-.jugador-carta.en-mano {
-  /* height:100%; */
-  top:-50%;
-}
-.jugador-carta .carta {
-  /* width: 50px; */
-  height: 100px;
   --ancho-carta: 70px;
+  transition: all 0.2s;
+}
+
+.jugador-carta.en-mano {
+  max-width: var(--ancho-carta);
+  left: calc( var(--col) * min( var(--ancho-carta), 100% / var(--cant-cols)));
+  top: -40%;
+}
+
+.en-mano.elegible {
+  top: -50%;
+}
+
+.en-mano.elegible:not(.elegida):hover {
+  top: -52%;
+}
+
+.en-mano.elegida {
+  top: -55%;
+}
+
+.jugador-carta .carta {
+  --ancho-carta: inherit;
+  height: 100px;
   max-width: 100%;
   max-height: 100%;
   font-size: 3rem;
   font-weight: bolder;
   color: var(--claro);
 }
+
 .en-mazo {
   --col: 0;
   --fila: 1;
 }
+
+.en-esquiva {
+  --col: 1;
+  --fila: 0;
+}
+
+.en-peligro {
+  --col: 2;
+  --fila: 0;
+}
+
+.en-ataque {
+  --col: 1;
+  --fila: 1;
+}
+
+.en-golpes {
+  --col: 2;
+  --fila: 1;
+}
+
+.sobreponer {
+  z-index: 1;
+}
+
 .jugador .carta-reverso {
   background-image: url('./char1.jpg');
 }
+
 .jugador .carta-cara {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.peligro {
+  z-index: 2;
+  font-size: min( 1.5rem, 4vmin);
+  font-weight: bolder;
+  color: var(--bordo);
+  flex: auto;
+  text-shadow: 0px 1px var(--claro);
+}
+
+.mensaje {
+  position: relative;
+  background-color: var(--claro);
+  /* width: 100%; */
+  font-size: min( 1.5rem, 3vmin);
+  padding: 0.1em 1em;
+  left: 0%;
+  margin-top: 2rem;
+  transition: all 0.3s;
+  /* max-height: 15vh; */
+  overflow-y: scroll;
+}
+
+.mensaje>* {
+  transition: all 0.3s;
+}
+
+.mensaje.oculto {
+  left: -150%;
 }
