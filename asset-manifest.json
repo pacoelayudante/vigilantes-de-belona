@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/vigilantes-de-belona/static/css/main.44a1b6d1.chunk.css",
+    "main.js": "/vigilantes-de-belona/static/js/main.0f667946.chunk.js",
+    "main.js.map": "/vigilantes-de-belona/static/js/main.0f667946.chunk.js.map",
+    "runtime-main.js": "/vigilantes-de-belona/static/js/runtime-main.51153c05.js",
+    "runtime-main.js.map": "/vigilantes-de-belona/static/js/runtime-main.51153c05.js.map",
+    "static/js/2.d219b545.chunk.js": "/vigilantes-de-belona/static/js/2.d219b545.chunk.js",
+    "static/js/2.d219b545.chunk.js.map": "/vigilantes-de-belona/static/js/2.d219b545.chunk.js.map",
+    "index.html": "/vigilantes-de-belona/index.html",
+    "precache-manifest.5d88fe784626d18fcd99ace45d94f2e1.js": "/vigilantes-de-belona/precache-manifest.5d88fe784626d18fcd99ace45d94f2e1.js",
+    "service-worker.js": "/vigilantes-de-belona/service-worker.js",
+    "static/css/main.44a1b6d1.chunk.css.map": "/vigilantes-de-belona/static/css/main.44a1b6d1.chunk.css.map",
+    "static/js/2.d219b545.chunk.js.LICENSE.txt": "/vigilantes-de-belona/static/js/2.d219b545.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/vigilantes-de-belona/static/media/orco.88f811d9.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.51153c05.js",
+    "static/js/2.d219b545.chunk.js",
+    "static/css/main.44a1b6d1.chunk.css",
+    "static/js/main.0f667946.chunk.js"
+  ]
+}
