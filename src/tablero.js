@@ -1,5 +1,6 @@
 import React from 'react';
 import Carta from './carta';
+import GitHubFork from './githubforkme';
 
 class CartaEnemigo extends React.Component {
     render() {
@@ -45,10 +46,10 @@ class Enemigo extends React.Component {
         const cartasJugadas = this.props.enemigo.mazoJugado.map(
             (elem, index) => <CartaEnemigo key={this.props.enemigo.mazoJugado.length - 1 + cartasPorJugar.length - index + cartaActual.length} stats={elem} className="ya-jugada" />
         );
-
+        const derrotado = this.props.enemigo.danoRecibido >= this.props.enemigo.clase.hpBase ? " derrotado" : "";
 
         return (
-            <div className={"enemigo " + this.props.enemigo.clase.estilo}>
+            <div className={"enemigo " + this.props.enemigo.clase.estilo + derrotado}>
                 <div className="nombre">{this.props.enemigo.nombre}</div>
                 <div className="defensa">
                     <div className="base">{this.props.enemigo.clase.defensaBase}</div>
@@ -66,6 +67,7 @@ class Enemigo extends React.Component {
 
 class Enemigos extends React.Component {
     classBoton(index) {
+        if (this.props.enemigos[index].danoRecibido >= this.props.enemigos[index].clase.hpBase) return " oculto";
         if (this.props.indexAtacado && this.props.indexAtacado !== -1) return (this.props.indexAtacado === index ? " usado" : " oculto");
         if (this.props.uiAtaque === null) return " oculto";
         if (this.props.uiAtaque.length < 2) return " inactivo";
@@ -99,12 +101,12 @@ class Accion extends React.Component {
 class VidaJugador extends React.Component {
     render() {
         const vidas = new Array(this.props.jugador.vida + 1).fill(1).map((elem, index) =>
-            <div key={index} className={"vida "+(index<this.props.jugador.dano?"dano":"sano")}></div>
+            <div key={index} className={"vida " + (index < this.props.jugador.dano ? "dano" : "sano")}></div>
         );
 
         return (<div>
             <div onClick={() => this.props.robar3(this.props.jugador.id)} className={"boton " + (this.props.inactivo ? "inactivo" : "")}>
-                +{this.props.jugador.vida-this.props.jugador.dano} ROBAR</div>
+                +{this.props.jugador.vida - this.props.jugador.dano} ROBAR</div>
             <div className="jugador-vidas">{vidas}</div>
         </div>);
     }
@@ -291,19 +293,48 @@ class Tablero extends React.Component {
         const indexAtacado = (jug.atacar.length === 0 ? -1 : jug.objetivo);
 
         let sumario = null;
-        if (this.props.ctx.phase === "sumario") {
-            sumario = (<div className="boton " onClick={this.props.events.endPhase}>Aceptar</div>);
+        if (this.props.ctx.gameover || this.props.ctx.phase === "sumario") {
+            let defensa = "No esquivaste este turno, y por eso recibiste un daño...";
+            if(jug.esquivar.length > 0) {
+                const peligroTotal = this.props.G.enemigos.reduce((total,enemigo)=>(enemigo.cartaPorJugar?enemigo.cartaPorJugar[0]:0)+total,jug.dataCartas[jug.peligro[0]]||0);
+                const evitado = jug.dataCartas[jug.esquivar[0]]>=peligroTotal;
+                defensa = `El ataque combinado de los enemigos y el nivel de peligro son de un total de ${peligroTotal}.
+                Tu esquiva de ${jug.dataCartas[jug.esquivar[0]]} ${evitado?"":"no "}fue suficiente para evitar el daño!`
+            }
+            let ataque = "No atacaste a nadie este turno...";
+            if (jug.atacar.length > 0) {
+                const enemigo = this.props.G.enemigos[jug.objetivo];
+                const defEnemigo = enemigo.clase.defensaBase + enemigo.cartaPorJugar[1];
+                const ataqueJugador = jug.dataCartas[jug.atacar[0]];
+                ataque = `Tu ataque fue con ${jug.atacar.length} cartas (${jug.atacar.length - 1} daño)
+                de las cuales salió el ${jug.dataCartas[jug.atacar[0]]}. El enemigo que atacaste fue ${enemigo.nombre}
+                que tiene una defensa base de ${enemigo.clase.defensaBase} y un modificador de
+                ${(enemigo.cartaPorJugar[1] > 0 ? "+" : "") + enemigo.cartaPorJugar[1]} este turno. Tu ataque
+                de ${jug.dataCartas[jug.atacar[0]]} ${ataqueJugador >= defEnemigo ? "" : "no "}venció su defensa total de ${defEnemigo}
+                ${ataqueJugador >= defEnemigo?" causando "+(jug.atacar.length - 1)+" de daño!":"."}`
+            }
+
+            let final = "";
+            if (this.props.ctx.gameover) {
+                if (this.props.ctx.gameover.vidasJugadores<=0) final = "Fuiste derrotado. ";
+                if (this.props.ctx.gameover.enemigosVivos<=0) final += "Todos los enemigos fueron vencidos!";
+            }
+            sumario = (<div>{defensa}<br />{ataque}<br />{final}
+                <div className={"boton "+this.props.ctx.gameover?"oculto":""} onClick={this.props.events.endPhase}>Aceptar</div>
+            </div>
+            );
         }
 
         return (
-            <div>
+            <>
+                {GitHubFork}
                 <Enemigos enemigos={this.props.G.enemigos} atacar={(arg) => this.atacarEnemigo(arg)}
                     uiAtaque={this.state.ataque} atacado={indexAtacado} />
                 <Mensaje>{sumario || this.state.mensaje}</Mensaje>
                 <Jugador fase={this.props.ctx.phase} moves={this.props.moves}
                     jugador={this.props.G.players[this.props.ctx.currentPlayer]}
-                    cambiarMensaje={(arg) => this.cambiarMensaje(arg)} cambiarUIAtaque={(arg) => this.cambiarAtaque(arg)} />
-            </div>
+                    cambiarMensaje={(arg) => this.cambiarMensaje(arg)} cambiarUIAtaque={(arg) => this.cambiarAtaque(arg)} />                    
+            </>
         );
     }
 }

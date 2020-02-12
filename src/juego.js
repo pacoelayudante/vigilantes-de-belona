@@ -61,6 +61,8 @@ const esquivar = (G, ctx, carta, jug) => {
 const atacar = (G, ctx, cartas, objetivo, jug) => {
     if (G.players[jug].accionesTomadas.includes("atacar")) return;
     if (cartas.length < 2) return;
+    if(!G.enemigos[objetivo]) return;
+    if(G.enemigos[objetivo].danoRecibido >= G.enemigos[objetivo].clase.hpBase) return;
     if (!cartas.every(e => G.players[jug].mano.includes(e))) return;
 
     G.players[jug].mano = G.players[jug].mano.filter(e => !cartas.includes(e));
@@ -209,6 +211,12 @@ export default {
 
     turn: { order: TurnOrder.RESET },
 
+    endIf: (G,ctx)=>{
+        const vidasJugadores = Object.keys(G.players).map(e=>G.players[e]).reduce((total,jug)=>total+jug.vida+1-jug.dano,0);
+        const enemigosVivos = G.enemigos.reduce((total,enemigo)=>total+(enemigo.danoRecibido<enemigo.clase.hpBase?1:0),0);
+        if(vidasJugadores<=0 || enemigosVivos===0) return {vidasJugadores:vidasJugadores,enemigosVivos:enemigosVivos};
+    },
+
     phases: {
         robar: {
             onBegin: (G, ctx) => {
@@ -216,6 +224,7 @@ export default {
                     Object.keys(G.players).forEach((elem) => robarXCartas(G, ctx, 3, elem));
                     G.primerRonda = false;
                 }
+                moverCartas(G, ctx);
             },
             moves: { robarCartasInicial },
             next: 'primerAccion',
@@ -262,9 +271,9 @@ export default {
             },
             moves: {},
             next: 'robar',
-            onEnd: (G, ctx) => {
-                moverCartas(G, ctx);
-            },
+            // onEnd: (G, ctx) => {
+            //     moverCartas(G, ctx);
+            // },
         }
     }
 
